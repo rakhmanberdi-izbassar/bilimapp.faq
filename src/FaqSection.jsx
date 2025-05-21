@@ -87,7 +87,34 @@ const faqData = [
 ]
 
 export default function FaqSection() {
+  const [faqData, setFaqData] = useState([])
+  const [loading, setLoading] = useState(true)
   const [expandedPanel, setExpandedPanel] = useState(null)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    fetch('https://cloud-admin.bilim-app.kz/api/faqs') 
+      .then((res) => res.json())
+      .then((data) => {
+        setFaqData(data)
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error('FAQ жүктеу қатесі:', error)
+        setLoading(false)
+        setError('Сұрақтарды жүктеу кезінде қате пайда болды.')
+      })
+  }, [])
+
+  if (loading) {
+    return (
+      <Box textAlign="center" py={5}>
+        <CircularProgress />
+        <Typography mt={2}>Сұрақтар жүктелуде...</Typography>
+      </Box>
+    )
+  }
+
   return (
     <Box sx={{ backgroundColor: '#f0f6ff', py: 6 }}>
       <Container>
@@ -199,11 +226,11 @@ export default function FaqSection() {
                       transition: 'all 0.2s ease-in-out',
                       ...(expandedPanel === idx
                         ? {
-                            backgroundColor: '#1565c0', // ашылған кезде — толық көк
+                            backgroundColor: '#1565c0',
                             color: '#fff',
                           }
                         : {
-                            backgroundColor: '#fff', // жабық кезде — ақ іші
+                            backgroundColor: '#fff',
                             border: '2px solid #1565c0',
                             color: '#1565c0',
                           }),
